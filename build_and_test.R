@@ -15,7 +15,7 @@ trainCorpus <- linesToCorpusDf(trainLines)
 
 minutesToRun = 10
 frequencyLimit = 1000
-model <- createModel(trainCorpus, minutesToRun = 2, frequencyLimit = 1000)
+model <- createModel(trainCorpus, minutesToRun = minutesToRun, frequencyLimit = frequencyLimit)
 accuracy <- runNTests(1000, model, trainCorpus) * 100
 print("")
 print("Trial:")
@@ -26,7 +26,7 @@ print(paste(c("accuracy:"), accuracy))
 
 minutesToRun = 20
 frequencyLimit = 1000
-model <- createModel(trainCorpus, minutesToRun = 2, frequencyLimit = 1000)
+model <- createModel(trainCorpus, minutesToRun = minutesToRun, frequencyLimit = frequencyLimit)
 accuracy <- runNTests(1000, model, trainCorpus) * 100
 print("")
 print("Trial:")
@@ -37,7 +37,7 @@ print(paste(c("accuracy:"), accuracy))
 
 minutesToRun = 40
 frequencyLimit = 1000
-model <- createModel(trainCorpus, minutesToRun = 2, frequencyLimit = 1000)
+model <- createModel(trainCorpus, minutesToRun = minutesToRun, frequencyLimit = frequencyLimit)
 accuracy <- runNTests(1000, model, trainCorpus) * 100
 print("")
 print("Trial:")
@@ -48,7 +48,7 @@ print(paste(c("accuracy:"), accuracy))
 
 minutesToRun = 20
 frequencyLimit = 10
-model <- createModel(trainCorpus, minutesToRun = 2, frequencyLimit = 1000)
+model <- createModel(trainCorpus, minutesToRun = minutesToRun, frequencyLimit = frequencyLimit)
 accuracy <- runNTests(1000, model, trainCorpus) * 100
 print("")
 print("Trial:")
@@ -59,7 +59,7 @@ print(paste(c("accuracy:"), accuracy))
 
 minutesToRun = 20
 frequencyLimit = 100
-model <- createModel(trainCorpus, minutesToRun = 2, frequencyLimit = 1000)
+model <- createModel(trainCorpus, minutesToRun = minutesToRun, frequencyLimit = frequencyLimit)
 accuracy <- runNTests(1000, model, trainCorpus) * 100
 print("")
 print("Trial:")
@@ -70,31 +70,31 @@ print(paste(c("accuracy:"), accuracy))
 
 minutesToRun = 20
 frequencyLimit = 1000
-model <- createModel(trainCorpus, minutesToRun = 2, frequencyLimit = 1000)
+model <- createModel(trainCorpus, minutesToRun = minutesToRun, frequencyLimit = frequencyLimit)
 accuracy <- runNTests(1000, model, trainCorpus) * 100
 print("")
 print("Trial:")
 print(paste(c("minutesToRun:"), minutesToRun))
 print(paste(c("frequencyLimit:"), frequencyLimit))
 print(paste(c("accuracy:"), accuracy))
-
-minutesToRun = 20
-frequencyLimit = 1000
-model <- createModel(trainCorpus, minutesToRun = 2, frequencyLimit = 1000)
-accuracy <- runNTests(1000, model, trainCorpus) * 100
-print("")
-print("Trial:")
-print(paste(c("minutesToRun:"), minutesToRun))
-print(paste(c("frequencyLimit:"), frequencyLimit))
-print(paste(c("accuracy:"), accuracy))
-
-
-minutesToRun = 5*60
-frequencyLimit = 10
-model <- createModel(trainCorpus, minutesToRun = 2, frequencyLimit = 1000)
-accuracy <- runNTests(1000, model, trainCorpus) * 100
-print("")
-print("Trial:")
-print(paste(c("minutesToRun:"), minutesToRun))
-print(paste(c("frequencyLimit:"), frequencyLimit))
-print(paste(c("accuracy:"), accuracy))
+# 
+# minutesToRun = 20
+# frequencyLimit = 1000
+# model <- createModel(trainCorpus, minutesToRun = minutesToRun, frequencyLimit = frequencyLimit)
+# accuracy <- runNTests(1000, model, trainCorpus) * 100
+# print("")
+# print("Trial:")
+# print(paste(c("minutesToRun:"), minutesToRun))
+# print(paste(c("frequencyLimit:"), frequencyLimit))
+# print(paste(c("accuracy:"), accuracy))
+# 
+# 
+# minutesToRun = 5*60
+# frequencyLimit = 10
+# model <- createModel(trainCorpus, minutesToRun = minutesToRun, frequencyLimit = frequencyLimit)
+# accuracy <- runNTests(1000, model, trainCorpus) * 100
+# print("")
+# print("Trial:")
+# print(paste(c("minutesToRun:"), minutesToRun))
+# print(paste(c("frequencyLimit:"), frequencyLimit))
+# print(paste(c("accuracy:"), accuracy))
