@@ -1,0 +1,127 @@
+---
+title: 'Coursera Datascience Project: Week Two Milestone Report'
+author: "T Fanselow"
+date: "26/05/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+## Summary
+
+This report provides an outline of exploratory analysis performed on the Coursera Datascience capstone project dataset. This analysis is the first step towards the overall goal of developing a word prediction system.
+
+The report demonstrates how the data was read, provides some high-level statistics describing the dataset, and comments on ideas for next steps in the project.
+
+## Processing functions
+
+The following functions are used to read and process the data:
+
+*Dependencies:*
+
+This analysis makes use of the tidytext and dplyr packages for text processing, ggplot2 for histograms, and knitr/kableExtra for formatting tables.
+```{r dependencies}
+library(tidytext)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+```
+
+*Text file reading*
+```{r processing}
+loadFile <- function(filepath) {
+    con = file(filepath, "r")
+    lines <- readLines(con)
+    close(con)
+    lines
+}
+```
+
+
+*Analysis/Summarisation*
+
+This function is used to convert the files to dataframes - first with one line per row, then with one word per row. Then some basic summary statistics are calculated and returned.
+
+Note that the wordCount and mostCommonWord results ignore all 'stop words' as defined by the tidytext package.
+
+This function is based on the tidy-text mining guide available here: https://www.tidytextmining.com/tidytext.html 
+
+```{r fileReading}
+summarise <- function(filepath){
+    lines <- loadFile(filepath)
+    linesDf <- tibble(line = 1:length(lines), text = lines)
+    wordsDf <- linesDf %>%
+      unnest_tokens(word, text)
+    
+    wordCounts <- wordsDf %>%
+      anti_join(stop_words) %>%
+      count(word, sort = TRUE)
+    
+    results <- list(
+        lines = linesDf,
+        nLines = nrow(linesDf),
+        words = wordsDf,
+        nWords = nrow(wordsDf),
+        wordCounts = wordCounts,
+        mostCommonWords = head(wordCounts, n=20)
+    )
+    results
+}
+```
+
+## Summarisation results
+
+The following table presents the line count, word count and most common word from each of the three datasets.
+
+```{r summary, cache=TRUE, eval=TRUE}
+tweets <- summarise('../data/final/en_US/en_US.twitter.txt')
+news <- summarise('../data/final/en_US/en_US.news.txt')
+blogs <- summarise('../data/final/en_US/en_US.blogs.txt')
+```
+
+
+```{r table, echo=FALSE}
+tibble(
+    dataset = c('en_US.twitter.txt','en_US.blogs.txt', 'en_US.news.txt'),
+    lineCount = c(tweets$nLines, blogs$nLines, news$nLines),
+    wordCount = c(tweets$nWords, blogs$nWords, news$nWords),
+    mostCommonWord = c(tweets$mostCommonWords$word[1], blogs$mostCommonWords$word[1], news$mostCommonWords$word[1]),
+) %>%
+  kable() %>%
+  kable_styling()
+```
+
+Although the datasets differ significantly in number of lines, they are similarly sized in terms of number of words, each containing 30 to 40 million words.
+
+The most common words in each dataset (with stop-words ommitted) are as follows:
+
+```{r hstograms, results='hold'}
+plotCommonWords <- function(words, title) {
+    words %>%
+    anti_join(stop_words) %>%
+    count(word, sort = TRUE) %>%
+    head(n = 20) %>%
+    mutate(word = reorder(word, n)) %>%
+    ggplot(aes(word, n)) +
+    geom_col() +
+    xlab(NULL) +
+    coord_flip() + 
+    labs(title = title, x = "Number of occurances")
+}
+plotCommonWords(tweets$words, 'Most common words in en_US.twitter.txt')
+plotCommonWords(blogs$words, 'Most common words in en_US.blogs.txt')
+plotCommonWords(news$words, 'Most common words in en_US.news.txt')
+```
+
+The differences in most common words indicate that the subject matter differs between the three datasets. This would suggest that a word-predictor may give quite different results if, for instance, it was trained with the twitter dataset compared to training with the news dataset.
+
+It may make sense to merge all three datasets to train the final predictor. Alternatively, it might be appropriate to use only one of the provided datasets, depending on the intended use-case (i.e. if it is intended for helping people to write tweets, then only train using the twitter dataset).
+
+## Next Steps
+
+The analysis shown here only looks at unigrams (single words in isolation). I expect a system based soley on which unigrams are most common in the dataset will yield very poor prediction performance. Hence the next step will be to extract and analyse common bigrams, and perhaps trigrams (two and three word sequences). This will allow for predictions to be made based on the preceeding one or two words, which will likely result in much better word predictions. 
+
+It is also apparent that a method of measuring prediction performance will be required, in order to determine the quality of the final system. Hence further investigation into suitable performance metrics is also required.

@@ -15,7 +15,7 @@ getNextWordNode <- function(parentNode, word) {
 
 predictExactSequence <- function(sequence, model) {
   #given a sequence of words (list)
-  #return prediction for next word.
+  #return prediction for next word (node).
   #returns NULL if model cannot find a prediction for the given sequence
   
   #move down the tree based on provided word sequence
@@ -26,7 +26,7 @@ predictExactSequence <- function(sequence, model) {
     }
     node <- getNextWordNode(node, word)
   }
-  node$children[[1]]$word
+  node$children[[1]]
 }
 
 
@@ -42,7 +42,7 @@ predictSequence <- function(sequence, model) {
     sequence <- sequence[-1]
     nextWord <- predictExactSequence(sequence, model)
   }
-  list(word=nextWord, sequence=sequence)
+  list(word=nextWord$word, node=nextWord, sequence=sequence)
 }
 
 predictFromText <- function(text, model) {
@@ -52,4 +52,5 @@ predictFromText <- function(text, model) {
   textDf <- linesToCorpusDf(list(text))
   textDf <- textDf[1:nrow(textDf)-1,]
   textDf
+  predictSequence(textDf$word, model)
 }

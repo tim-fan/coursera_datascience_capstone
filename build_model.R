@@ -1,6 +1,7 @@
 library(dplyr)
 library(tidytext)
 library(data.tree)
+library(stringr)
 
 sosToken <- 'start-of-sequence' #'root' token, representing start of a sequence
 eolToken <- 'eol' #token to capture end of line
@@ -44,11 +45,10 @@ getToyCorpus <- function(){
 makeRootNode <- function(corpus){
   #given a dataframe of words, return a root node
   #representing the start of all word sequences in that dataframe
-  rootNode <- Node$new()
+  rootNode <- Node$new(UUIDgenerate())
   rootNode$word <- sosToken
   rootNode$occurrences <- 0:(nrow(corpus)-1)
   rootNode$nOccurrences <- length(rootNode$occurrences)
-  #rootNode$absPath <- '.'
   rootNode$sequence <- ''
   rootNode
 }
@@ -58,6 +58,14 @@ printModel <- function(node){
   print(
     ToDataFrameTree(node, 'word', 'nOccurrences', 'sequence', 'level')
   )
+}
+
+prettyFormat <- function(node){
+  #return a text representation of the node
+  treeDf <- ToDataFrameTree(node, 'levelName', 'word', 'name') %>%
+    transmute(prettyPath = str_replace(levelName, name, word)) %>% head()
+  
+  paste(treeDf$prettyPath, collapse = "\n")
 }
 
 expandNode <- function(node, corpus, frequencyLimit) {
@@ -100,13 +108,13 @@ expandNode <- function(node, corpus, frequencyLimit) {
   {
     newNodes <- as.Node(
       wordCounts %>%
-        mutate(name=as.character(row_number() + 1)) %>% 
-        #mutate(absPath = paste(parentPath, name, sep='/')) %>%
+        mutate(name = replicate(nrow(wordCounts), UUIDgenerate())) %>%
+        # mutate(name=as.character(row_number() + 1)) %>% 
         mutate(pathString = paste0('./', name)) %>% 
         mutate(sequence = paste(parentSequence, word, sep=' '))
     )$children
     
-    for (newNode in newNodes){ 
+    for (newNode in newNodes){
       node$AddChildNode(newNode)
     }
   }
@@ -168,6 +176,27 @@ createModel <- function(corpus, minutesToRun, frequencyLimit) {
   
   while ((nrow(frontier) > 0) && ( as.double(Sys.time() - startTime, units="mins") < minutesToRun)){
     frontier <- expandFrontier(frontier, corpus, frequencyLimit)
+    print(nrow(frontier))
   }
   rootNode
+}
+
+saveModel <- function(model, filename){
+  #save model in the given file
+  save(model, file=filename)
+}
+
+loadModel <- function(filename){
+  load(filename)
+  model
+}
+
+saveModelCsv <- function(model, filename){
+  df <- ToDataFrameTree(model, 'pathString', 'word')
+  write.csv2(df, file=filename)
+}
+
+loadModelCsv <- function(filename){
+  df <- read.csv2(filename, stringsAsFactors = FALSE)
+  as.Node(df)
 }

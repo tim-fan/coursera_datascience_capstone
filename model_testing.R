@@ -1,3 +1,5 @@
+source('predict.R')
+
 getRandomTest <- function(corpus) {
   #return a random sequence (test input) and a next word (correct output) from the given corpus
   nextWord <- corpus[sample(nrow(corpus)-1, 1),]

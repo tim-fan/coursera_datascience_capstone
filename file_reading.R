@@ -45,3 +45,7 @@ readWholeFile <- function(filepath) {
 load1kRandomTweets <- function() {
   readRDS(file='./data/subsets/enUsTwitter1kSubset.rds')
 }
+
+load10kRandomTweets <- function() {
+  readRDS(file='./data/subsets/enUsTwitter10kSubset.rds')
+}
